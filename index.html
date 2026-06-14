@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lumen — Whole-Family Wellness</title>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #F4EEE4; color: #1A2A1E; }
+a { text-decoration: none; color: inherit; }
+
+/* ── TOKENS ── */
+:root {
+  --pine:    #1A3828;
+  --cedar:   #2E6048;
+  --fern:    #5A9478;
+  --stone:   #F4EEE4;
+  --parchment: #EDE4D4;
+  --sunflower: #E8A030;
+  --foxglove:  #C06090;
+  --bluebell:  #6090C8;
+  --ink:     #0E2018;
+  --mist:    #D4E8DC;
+}
+
+nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem 4vw; background: rgba(244,238,228,0.95);
+  border-bottom: 0.5px solid #C8D8C0; position: sticky; top: 0; z-index: 200;
+  backdrop-filter: blur(10px);
+}
+.nav-left { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.logo { font-size: 16px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--pine); }
+.nav-flowers { display: flex; gap: 5px; align-items: center; }
+.nf { width: 10px; height: 10px; border-radius: 50%; }
+.nav-links { display: flex; gap: 2rem; }
+.nav-links a { font-size: 11px; color: var(--fern); letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: color 0.15s; }
+.nav-links a:hover, .nav-links a.active { color: var(--pine); }
+.nav-cta { background: var(--pine); color: var(--stone); border: none; padding: 8px 20px; border-radius: 40px; font-size: 11px; cursor: pointer; letter-spacing: 1px; text-transform: uppercase; }
+
+.page { display: none; }
+.page.active { display: block; }
+
+.eyebrow { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--fern); margin-bottom: 0.6rem; }
+.section-title { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; color: var(--pine); margin-bottom: 0.5rem; }
+.section-sub { font-size: 14px; color: #5A7060; line-height: 1.7; }
+.pill-btn { padding: 10px 24px; border-radius: 40px; border: none; font-size: 11px; cursor: pointer; letter-spacing: 1px; text-transform: uppercase; font-weight: 600; transition: opacity 0.15s; }
+.pill-btn:hover { opacity: 0.85; }
+.ghost-btn { background: transparent; border: 1.5px solid var(--cedar); color: var(--cedar); padding: 10px 24px; border-radius: 40px; font-size: 11px; cursor: pointer; letter-spacing: 1px; text-transform: uppercase; transition: all 0.15s; }
+
+/* ══ HOME ══ */
+.home-hero {
+  background: linear-gradient(135deg, #1A3828 0%, #2E6048 50%, #1A3828 100%);
+  padding: 6vw 4vw 5vw; display: grid; grid-template-columns: 1fr 1fr; gap: 4vw; align-items: center;
+  position: relative; overflow: hidden;
+}
+.hero-bloom { position: absolute; right: 0; top: 0; bottom: 0; width: 50%; opacity: 0.07; pointer-events: none; }
+.home-hero h1 { font-size: clamp(34px,5vw,62px); font-weight: 700; line-height: 1.04; letter-spacing: -2px; color: #EEF8F2; margin-bottom: 1rem; }
+.home-hero h1 em { font-style: normal; color: var(--sunflower); }
+.home-hero p { font-size: 15px; color: #A8C8B4; line-height: 1.85; margin-bottom: 2rem; }
+.home-hero-btns { display: flex; gap: 10px; margin-bottom: 2.5rem; flex-wrap: wrap; }
+.home-stats { display: flex; gap: 2.5rem; padding-top: 2rem; border-top: 0.5px solid rgba(255,255,255,0.1); }
+.hstat-n { font-size: 28px; font-weight: 700; letter-spacing: -1px; color: #EEF8F2; }
+.hstat-l { font-size: 9px; color: var(--fern); letter-spacing: 1.5px; text-transform: uppercase; margin-top: 2px; }
+
+/* flower accent strip */
+.flower-strip { display: flex; height: 6px; }
+.fs { flex: 1; }
+
+.home-pillars { padding: 5vw 4vw; background: var(--stone); }
+.pillars-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 2rem; }
+.pillar-card { border-radius: 20px; padding: 1.5rem; border: 0.5px solid rgba(0,0,0,0.06); }
+.pillar-card .picon { width: 40px; height: 40px; border-radius: 12px; background: rgba(255,255,255,0.5); display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 0.9rem; }
+.pillar-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 0.4rem; }
+.pillar-card p { font-size: 12px; line-height: 1.6; opacity: 0.8; }
+
+.ecosystem { padding: 5vw 4vw; background: var(--pine); }
+.ecosystem h2 { font-size: clamp(22px,3vw,36px); font-weight: 700; color: #EEF8F2; letter-spacing: -0.5px; margin-bottom: 0.5rem; }
+.ecosystem > p { font-size: 14px; color: var(--fern); margin-bottom: 2.5rem; }
+.eco-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.eco-card { border-radius: 20px; padding: 1.75rem; cursor: pointer; transition: transform 0.18s; border: 0.5px solid rgba(255,255,255,0.08); }
+.eco-card:hover { transform: translateY(-3px); }
+.eco-card .eco-tag { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0.75rem; opacity: 0.7; }
+.eco-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 0.5rem; }
+.eco-card p { font-size: 12px; line-height: 1.6; opacity: 0.75; }
+.eco-card .eco-link { font-size: 11px; font-weight: 600; margin-top: 1.25rem; display: inline-block; }
+
+.home-quote { background: linear-gradient(135deg, #1A3828, #2E6048); padding: 5vw 4vw; text-align: center; }
+.home-quote blockquote { font-size: clamp(20px,3vw,32px); font-weight: 400; color: #EEF8F2; line-height: 1.45; max-width: 560px; margin: 0 auto 0.75rem; font-family: Georgia, serif; font-style: italic; }
+.home-quote cite { font-size: 10px; color: var(--fern); font-style: normal; letter-spacing: 2px; text-transform: uppercase; }
+
+/* ══ WEGO ══ */
+.wego-hero { background: linear-gradient(135deg, #2E6048 0%, #1A3828 60%, #0E2018 100%); padding: 6vw 4vw 5vw; display: grid; grid-template-columns: 1fr 1fr; gap: 4vw; align-items: center; }
+.wego-hero h1 { font-size: clamp(32px,4.5vw,56px); font-weight: 700; line-height: 1.06; letter-spacing: -1.5px; color: #EEF8F2; margin-bottom: 1rem; }
+.wego-hero h1 em { font-style: normal; color: var(--sunflower); }
+.wego-hero p { font-size: 15px; color: #A8C8B4; line-height: 1.85; margin-bottom: 2rem; }
+.wego-mockup { background: rgba(255,255,255,0.08); backdrop-filter: blur(8px); border-radius: 28px; padding: 2rem; border: 0.5px solid rgba(255,255,255,0.15); }
+.wego-app-icon { width: 64px; height: 64px; border-radius: 18px; background: var(--sunflower); display: flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 1rem; }
+.wego-mockup h3 { font-size: 22px; font-weight: 700; color: #EEF8F2; margin-bottom: 0.3rem; }
+.wego-mockup .sub { font-size: 13px; color: var(--fern); margin-bottom: 1.5rem; }
+.wego-bars { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1.5rem; }
+.bar-row { display: flex; align-items: center; gap: 10px; }
+.bar-label { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--fern); width: 64px; }
+.bar-track { flex: 1; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 4px; }
+.wego-stats-row { display: flex; gap: 8px; }
+.wego-stat { background: rgba(255,255,255,0.08); border-radius: 14px; padding: 0.75rem 1rem; flex: 1; text-align: center; border: 0.5px solid rgba(255,255,255,0.1); }
+.wego-stat .n { font-size: 18px; font-weight: 700; color: #EEF8F2; }
+.wego-stat .l { font-size: 9px; color: var(--fern); letter-spacing: 1px; text-transform: uppercase; }
+
+.wego-features { padding: 5vw 4vw; background: var(--stone); }
+.features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 2rem; }
+.feature-card { background: #fff; border-radius: 20px; padding: 1.75rem; border: 0.5px solid var(--mist); }
+.feature-card .ficon { font-size: 28px; margin-bottom: 1rem; }
+.feature-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 0.5rem; color: var(--pine); }
+.feature-card p { font-size: 13px; color: #5A7060; line-height: 1.65; }
+
+.wego-download { background: var(--pine); padding: 5vw 4vw; text-align: center; }
+.wego-download h2 { font-size: clamp(24px,3vw,40px); font-weight: 700; color: #EEF8F2; letter-spacing: -0.5px; margin-bottom: 1rem; }
+.wego-download p { font-size: 15px; color: var(--fern); margin-bottom: 2rem; }
+.dl-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.dl-btn { background: rgba(255,255,255,0.1); color: #EEF8F2; border: 1.5px solid rgba(255,255,255,0.2); padding: 12px 28px; border-radius: 40px; font-size: 13px; cursor: pointer; font-weight: 600; }
+
+/* ══ SHOP ══ */
+.shop-hero { background: linear-gradient(135deg, #2E6048, #1A3828); padding: 5vw 4vw 4vw; }
+.shop-hero h1 { font-size: clamp(30px,4vw,52px); font-weight: 700; letter-spacing: -1.5px; color: #EEF8F2; margin-bottom: 0.75rem; }
+.shop-hero p { font-size: 15px; color: #A8C8B4; line-height: 1.75; max-width: 500px; }
+.filter-bar { padding: 1.25rem 4vw; background: var(--stone); border-bottom: 0.5px solid #C8D8C0; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.filter-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--fern); margin-right: 4px; }
+.filter-btn { padding: 7px 16px; border-radius: 40px; border: 1.5px solid #C8D8C0; background: #fff; font-size: 11px; cursor: pointer; color: var(--cedar); transition: all 0.15s; }
+.filter-btn.active { background: var(--pine); color: var(--stone); border-color: var(--pine); }
+.filter-count { font-size: 10px; color: var(--fern); margin-left: auto; letter-spacing: 1px; }
+.affiliate-notice { margin: 1rem 4vw; padding: 0.75rem 1.25rem; background: #EEF8F2; border: 0.5px solid var(--mist); border-radius: 12px; font-size: 11px; color: var(--cedar); line-height: 1.6; }
+.shop-grid { padding: 2rem 4vw; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 14px; background: var(--stone); }
+.product-card { border-radius: 20px; overflow: hidden; background: #fff; border: 0.5px solid #C8D8C0; display: flex; flex-direction: column; transition: transform 0.18s, box-shadow 0.18s; }
+.product-card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(26,56,40,0.12); }
+.product-img { height: 120px; display: flex; align-items: center; justify-content: center; font-size: 40px; position: relative; }
+.product-badge { position: absolute; top: 8px; left: 8px; font-size: 9px; font-weight: 600; padding: 3px 9px; border-radius: 20px; letter-spacing: 0.5px; text-transform: uppercase; }
+.badge-imported { background: #F0E8F8; color: #4A1A7A; }
+.badge-wellness { background: #D4ECD8; color: #1A4A20; }
+.badge-family { background: #D4E8F4; color: #0A2050; }
+.badge-kids { background: #FDE8C0; color: #5A3000; }
+.product-info { padding: 1rem; flex: 1; display: flex; flex-direction: column; }
+.product-cat { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--fern); margin-bottom: 0.3rem; }
+.product-name { font-size: 13px; font-weight: 700; color: var(--pine); margin-bottom: 0.3rem; line-height: 1.4; }
+.product-desc { font-size: 11px; color: #5A7060; line-height: 1.55; margin-bottom: 0.75rem; flex: 1; }
+.product-footer { display: flex; align-items: center; justify-content: space-between; }
+.product-price { font-size: 18px; font-weight: 700; color: var(--cedar); }
+.aff-btn { padding: 6px 12px; border-radius: 40px; border: none; font-size: 10px; cursor: pointer; font-weight: 600; background: var(--mist); color: var(--pine); }
+
+/* ══ BLOG ══ */
+.blog-hero { background: linear-gradient(135deg, #1A3828, #2E6048); padding: 5vw 4vw 4vw; }
+.blog-hero h1 { font-size: clamp(30px,4vw,52px); font-weight: 700; letter-spacing: -1.5px; color: #EEF8F2; margin-bottom: 0.75rem; }
+.blog-hero p { font-size: 15px; color: #A8C8B4; line-height: 1.75; max-width: 500px; }
+.blog-filter { padding: 1.25rem 4vw; background: var(--stone); border-bottom: 0.5px solid #C8D8C0; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.blog-grid { padding: 2.5rem 4vw; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap: 16px; background: var(--stone); }
+.blog-card { background: #fff; border-radius: 20px; overflow: hidden; border: 0.5px solid #C8D8C0; cursor: pointer; transition: transform 0.18s, box-shadow 0.18s; }
+.blog-card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(26,56,40,0.12); }
+.blog-img { height: 130px; display: flex; align-items: center; justify-content: center; font-size: 48px; }
+.blog-content { padding: 1.25rem; }
+.blog-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 0.6rem; }
+.blog-tag { font-size: 9px; font-weight: 600; padding: 3px 10px; border-radius: 20px; letter-spacing: 0.5px; text-transform: uppercase; }
+.blog-date { font-size: 10px; color: var(--fern); }
+.blog-card h3 { font-size: 15px; font-weight: 700; color: var(--pine); margin-bottom: 0.4rem; line-height: 1.4; }
+.blog-card p { font-size: 12px; color: #5A7060; line-height: 1.6; }
+.blog-card .read-more { font-size: 11px; font-weight: 600; margin-top: 0.9rem; display: inline-block; color: var(--cedar); }
+.newsletter { background: var(--pine); padding: 5vw 4vw; text-align: center; }
+.newsletter h2 { font-size: clamp(22px,3vw,36px); font-weight: 700; color: #EEF8F2; letter-spacing: -0.5px; margin-bottom: 0.75rem; }
+.newsletter p { font-size: 14px; color: var(--fern); margin-bottom: 2rem; }
+.newsletter-form { display: flex; gap: 10px; justify-content: center; max-width: 440px; margin: 0 auto; flex-wrap: wrap; }
+.newsletter-form input { flex: 1; min-width: 200px; padding: 12px 20px; border-radius: 40px; border: none; background: rgba(255,255,255,0.1); color: #EEF8F2; font-size: 13px; outline: none; }
+.newsletter-form input::placeholder { color: var(--fern); }
+.newsletter-form button { background: var(--sunflower); color: var(--pine); border: none; padding: 12px 24px; border-radius: 40px; font-size: 12px; cursor: pointer; font-weight: 700; }
+
+/* ══ FOOTER ══ */
+.site-footer { padding: 2rem 4vw; border-top: 0.5px solid #C8D8C0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; background: var(--parchment); }
+.footer-logo { font-size: 13px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--pine); }
+.footer-links { display: flex; gap: 1.5rem; }
+.footer-links a { font-size: 10px; color: var(--cedar); letter-spacing: 1px; text-transform: uppercase; cursor: pointer; }
+.footer-copy { font-size: 10px; color: var(--fern); }
+
+/* ══ ABOUT ══ */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 5vw; align-items: start; }
+.three-col { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+.value-card { border-radius: 20px; padding: 1.75rem; border: 0.5px solid rgba(0,0,0,0.06); }
+.value-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 0.5rem; }
+.value-card p { font-size: 12px; line-height: 1.65; opacity: 0.85; }
+.value-icon { font-size: 26px; margin-bottom: 0.9rem; }
+.dark-card { background: rgba(255,255,255,0.06); border-radius: 20px; padding: 1.75rem; border: 0.5px solid rgba(255,255,255,0.1); }
+.dark-card h3 { font-size: 15px; font-weight: 700; color: #EEF8F2; margin-bottom: 0.5rem; }
+.dark-card p { font-size: 12px; color: #90B8A0; line-height: 1.65; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left" onclick="showPage('home')">
+    <div class="nav-flowers">
+      <div class="nf" style="background:#E8A030;"></div>
+      <div class="nf" style="background:#5A9478;"></div>
+      <div class="nf" style="background:#C06090;"></div>
+      <div class="nf" style="background:#6090C8;"></div>
+      <div class="nf" style="background:#E8A030;"></div>
+    </div>
+    <div class="logo">Lumen</div>
+  </div>
+  <div class="nav-links">
+    <a id="nav-home" class="active" onclick="showPage('home')">Home</a>
+    <a id="nav-wego" onclick="showPage('wego')">WeGo</a>
+    <a id="nav-shop" onclick="showPage('shop')">Shop</a>
+    <a id="nav-blog" onclick="showPage('blog')">Resources</a>
+    <a id="nav-about" onclick="showPage('about')">About</a>
+  </div>
+  <button class="nav-cta" onclick="showPage('wego')">Download WeGo</button>
+</nav>
+
+<!-- ══════════ HOME ══════════ -->
+<div class="page active" id="page-home">
+  <div class="home-hero">
+    <div style="position:relative;z-index:2;">
+      <p class="eyebrow" style="color:#74BF8A;">Whole-family wellness</p>
+      <h1>A <em>healthy family</em> is the greatest thing you can build.</h1>
+    </div>
+    <div style="position:relative;z-index:2;">
+      <p>Not just physically healthy. Emotionally close. Intellectually alive. Grounded in values. Connected to community. Lumen is built for families who take all of that seriously — across every generation.</p>
+      <div class="home-hero-btns">
+        <button class="pill-btn" style="background:var(--sunflower);color:var(--pine);" onclick="showPage('wego')">Meet WeGo</button>
+        <button style="background:rgba(255,255,255,0.1);color:#EEF8F2;border:1.5px solid rgba(255,255,255,0.2);padding:10px 24px;border-radius:40px;font-size:11px;cursor:pointer;letter-spacing:1px;text-transform:uppercase;" onclick="showPage('shop')">Visit the Shop</button>
+      </div>
+      <div class="home-stats">
+        <div><div class="hstat-n">6</div><div class="hstat-l">Pillars</div></div>
+        <div><div class="hstat-n">50k+</div><div class="hstat-l">Families</div></div>
+        <div><div class="hstat-n">4.9★</div><div class="hstat-l">App rating</div></div>
+        <div><div class="hstat-n">Free</div><div class="hstat-l">To start</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- flower strip -->
+  <div class="flower-strip">
+    <div class="fs" style="background:#1A3828;"></div>
+    <div class="fs" style="background:#2E6048;"></div>
+    <div class="fs" style="background:#5A9478;"></div>
+    <div class="fs" style="background:#E8A030;"></div>
+    <div class="fs" style="background:#C06090;"></div>
+    <div class="fs" style="background:#6090C8;"></div>
+    <div class="fs" style="background:#C06090;"></div>
+    <div class="fs" style="background:#E8A030;"></div>
+    <div class="fs" style="background:#5A9478;"></div>
+    <div class="fs" style="background:#2E6048;"></div>
+    <div class="fs" style="background:#1A3828;"></div>
+  </div>
+
+  <div class="home-pillars">
+    <p class="eyebrow">Our pillars</p>
+    <h2 class="section-title">Every dimension of family health</h2>
+    <p class="section-sub">Six dimensions, one thriving family — each one nourishing the others.</p>
+    <div class="pillars-grid">
+      <div class="pillar-card" style="background:linear-gradient(135deg,#D4ECD8,#A8D4B0);color:#0A2A14;">
+        <div class="picon">🏃</div><h3>Physical</h3><p>Nutrition, movement, and healthy habits for every age — toddlers to grandparents</p>
+      </div>
+      <div class="pillar-card" style="background:linear-gradient(135deg,#FAE0EC,#F4C0D8);color:#3A0A20;">
+        <div class="picon">💛</div><h3>Emotional</h3><p>Presence, connection, and the bonds that hold a family through everything</p>
+      </div>
+      <div class="pillar-card" style="background:linear-gradient(135deg,#FEF0D4,#FAD890);color:#3A2000;">
+        <div class="picon">💡</div><h3>Intellectual</h3><p>Curiosity, learning, and growing minds at every age and stage</p>
+      </div>
+      <div class="pillar-card" style="background:linear-gradient(135deg,#D4E8F4,#A8CCE8);color:#0A1A40;">
+        <div class="picon">🧭</div><h3>Values</h3><p>Shared philosophy and the direction a family chooses to grow in together</p>
+      </div>
+      <div class="pillar-card" style="background:linear-gradient(135deg,#D4ECD8,#A8D4B0);color:#0A2A14;">
+        <div class="picon">🤝</div><h3>Social</h3><p>Belonging — to each other, to neighbours, to the community around you</p>
+      </div>
+      <div class="pillar-card" style="background:linear-gradient(135deg,#FEF0D4,#FAD890);color:#3A2000;">
+        <div class="picon">🌱</div><h3>Financial</h3><p>Security and abundance — building something that lasts across generations</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="ecosystem">
+    <p class="eyebrow" style="color:var(--fern);">The Lumen ecosystem</p>
+    <h2>Everything your family needs, connected</h2>
+    <p>Three products, one mission — each designed to work seamlessly with the others.</p>
+    <div class="eco-cards">
+      <div class="eco-card" style="background:linear-gradient(135deg,#2E6048,#1A3828);color:#EEF8F2;" onclick="showPage('wego')">
+        <div class="eco-tag" style="color:var(--sunflower);">App</div>
+        <h3>WeGo</h3>
+        <p>The family adventure app that turns ordinary days into shared memories — for every generation.</p>
+        <span class="eco-link" style="color:var(--sunflower);">Explore WeGo →</span>
+      </div>
+      <div class="eco-card" style="background:linear-gradient(135deg,#3D5A3E,#2A4028);color:#EEF8F2;" onclick="showPage('shop')">
+        <div class="eco-tag" style="color:#C8ECD6;">Shop</div>
+        <h3>Lumen Shop</h3>
+        <p>Wellness products and family essentials — thoughtfully sourced and available on Amazon.</p>
+        <span class="eco-link" style="color:#A8D4B0;">Visit the Shop →</span>
+      </div>
+      <div class="eco-card" style="background:linear-gradient(135deg,#1A2838,#0E1820);color:#EEF8F2;" onclick="showPage('blog')">
+        <div class="eco-tag" style="color:var(--bluebell);">Resources</div>
+        <h3>Family Hub</h3>
+        <p>Articles, guides, and activities across all six wellness pillars — updated weekly.</p>
+        <span class="eco-link" style="color:var(--bluebell);">Read the Blog →</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="home-quote">
+    <div style="display:flex;gap:8px;justify-content:center;margin-bottom:1.5rem;">
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--sunflower);"></div>
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--foxglove);"></div>
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--bluebell);"></div>
+    </div>
+    <blockquote>"A healthy family is not an accident. It is a choice — made together, every single day."</blockquote>
+    <cite style="margin-top:0.75rem;display:block;">— The Lumen family · Toronto, Canada</cite>
+  </div>
+
+  <footer class="site-footer">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div class="nav-flowers"><div class="nf" style="background:#E8A030;"></div><div class="nf" style="background:#5A9478;"></div><div class="nf" style="background:#C06090;"></div><div class="nf" style="background:#6090C8;"></div></div>
+      <span class="footer-logo">Lumen</span>
+    </div>
+    <div class="footer-links"><a onclick="showPage('home')">Home</a><a onclick="showPage('wego')">WeGo</a><a onclick="showPage('shop')">Shop</a><a onclick="showPage('blog')">Resources</a><a onclick="showPage('about')">About</a></div>
+    <span class="footer-copy">Toronto, Canada · Est. 2025</span>
+  </footer>
+</div>
+
+<!-- ══════════ WEGO ══════════ -->
+<div class="page" id="page-wego">
+  <div class="wego-hero">
+    <div>
+      <p class="eyebrow" style="color:var(--sunflower);">Family adventure app</p>
+      <h1>The best adventures happen when <em>we go</em> together</h1>
+      <p>WeGo turns everyday family time into shared discoveries — challenges, explorations, and memories that bring every generation closer.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="pill-btn" style="background:var(--sunflower);color:var(--pine);">Download for iOS</button>
+        <button class="pill-btn" style="background:var(--fern);color:#EEF8F2;">Download for Android</button>
+      </div>
+    </div>
+    <div class="wego-mockup">
+      <div class="wego-app-icon">🗺️</div>
+      <h3>WeGo</h3>
+      <div class="sub">Family adventures, together</div>
+      <div class="wego-bars">
+        <div class="bar-row"><span class="bar-label">Activity</span><div class="bar-track"><div class="bar-fill" style="width:82%;background:var(--sunflower);"></div></div></div>
+        <div class="bar-row"><span class="bar-label">Bonding</span><div class="bar-track"><div class="bar-fill" style="width:91%;background:var(--foxglove);"></div></div></div>
+        <div class="bar-row"><span class="bar-label">Learning</span><div class="bar-track"><div class="bar-fill" style="width:74%;background:var(--bluebell);"></div></div></div>
+        <div class="bar-row"><span class="bar-label">Fun</span><div class="bar-track"><div class="bar-fill" style="width:97%;background:var(--fern);"></div></div></div>
+      </div>
+      <div class="wego-stats-row">
+        <div class="wego-stat"><div class="n" style="color:var(--sunflower);">4.9★</div><div class="l">Rating</div></div>
+        <div class="wego-stat"><div class="n" style="color:#A8D4B0;">50k+</div><div class="l">Families</div></div>
+        <div class="wego-stat"><div class="n" style="color:var(--bluebell);">Free</div><div class="l">To start</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- flower strip -->
+  <div class="flower-strip">
+    <div class="fs" style="background:#1A3828;"></div><div class="fs" style="background:#2E6048;"></div><div class="fs" style="background:#E8A030;"></div><div class="fs" style="background:#C06090;"></div><div class="fs" style="background:#6090C8;"></div><div class="fs" style="background:#5A9478;"></div><div class="fs" style="background:#6090C8;"></div><div class="fs" style="background:#C06090;"></div><div class="fs" style="background:#E8A030;"></div><div class="fs" style="background:#2E6048;"></div><div class="fs" style="background:#1A3828;"></div>
+  </div>
+
+  <div class="wego-features">
+    <div style="background:linear-gradient(135deg,#1A3828,#0E2018);border-radius:24px;padding:2.5rem;margin-bottom:2.5rem;display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;">
+      <div>
+        <p style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--sunflower);margin-bottom:1rem;opacity:0.9;">How WeGo began</p>
+        <h2 style="font-size:clamp(20px,2.5vw,32px);font-weight:700;color:#EEF8F2;line-height:1.2;margin-bottom:1.25rem;letter-spacing:-0.5px;">It started with a game. It ended with a family rediscovering itself.</h2>
+        <p style="font-size:14px;color:#90B8A0;line-height:1.85;margin-bottom:1rem;">We didn't set out to build a family app. We went for a walk one afternoon — phones out, playing Pokémon Go — and something unexpected happened. Three generations were suddenly moving together, talking about the same thing, exploring the same neighbourhood.</p>
+        <p style="font-size:14px;color:#90B8A0;line-height:1.85;margin-bottom:1rem;">Grandparents were asking questions. Children were the experts. Everyone was outside, looking up, noticing things they'd never noticed before. The game had turned the familiar into an adventure — and the family into a team.</p>
+        <p style="font-size:14px;color:var(--sunflower);line-height:1.85;font-style:italic;">"What if we could design that feeling on purpose — every day?"</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="dark-card" style="display:flex;gap:12px;"><div style="font-size:22px;flex-shrink:0;">🗺️</div><div><div style="font-size:13px;font-weight:700;color:#EEF8F2;margin-bottom:0.3rem;">Discovering your surroundings</div><div style="font-size:12px;color:#90B8A0;line-height:1.6;">The game made us see our neighbourhood differently — parks, landmarks, histories we'd walked past without noticing.</div></div></div>
+        <div class="dark-card" style="display:flex;gap:12px;"><div style="font-size:22px;flex-shrink:0;">👴</div><div><div style="font-size:13px;font-weight:700;color:#EEF8F2;margin-bottom:0.3rem;">Children teaching grandparents</div><div style="font-size:12px;color:#90B8A0;line-height:1.6;">For once, the youngest were the experts. That reversal opened something tender and new in the family dynamic.</div></div></div>
+        <div class="dark-card" style="display:flex;gap:12px;"><div style="font-size:22px;flex-shrink:0;">🤝</div><div><div style="font-size:13px;font-weight:700;color:#EEF8F2;margin-bottom:0.3rem;">One goal, every generation</div><div style="font-size:12px;color:#90B8A0;line-height:1.6;">Working together toward the same thing, in the same place, at the same time. That's rarer — and more powerful — than it sounds.</div></div></div>
+      </div>
+    </div>
+
+    <p class="eyebrow">What WeGo does</p>
+    <h2 class="section-title">Built for every generation</h2>
+    <p class="section-sub">Six features mirroring the Lumen wellness pillars — so every family member plays a meaningful role.</p>
+    <div class="features-grid">
+      <div class="feature-card"><div class="ficon">🎯</div><h3>Family Challenges</h3><p>Daily and weekly activities for mixed-age groups — from neighbourhood walks to cooking nights. Everyone has a role.</p></div>
+      <div class="feature-card"><div class="ficon">🗺️</div><h3>Adventure Maps</h3><p>Discover what's around you — parks, local histories, community events. Learn your surroundings together.</p></div>
+      <div class="feature-card"><div class="ficon">🔄</div><h3>Cross-Generational Play</h3><p>Activities where grandparents and grandchildren teach each other. The dynamics shift. Families rediscover who everyone is.</p></div>
+      <div class="feature-card"><div class="ficon">📖</div><h3>Memory Journal</h3><p>Capture moments from every adventure. A living family record that grows richer with every generation that adds to it.</p></div>
+      <div class="feature-card"><div class="ficon">🏘️</div><h3>Community Explorer</h3><p>Connect with the neighbourhood. Meet nearby families, learn local histories, and build the ties that make a place feel like home.</p></div>
+      <div class="feature-card"><div class="ficon">🏆</div><h3>Family Milestones</h3><p>Celebrate what matters — as a family, together. Achievements across all six Lumen wellness pillars.</p></div>
+    </div>
+
+    <div style="background:linear-gradient(135deg,#2E6048,#1A3828);border-radius:24px;padding:2.5rem;margin-top:2rem;text-align:center;">
+      <h3 style="font-size:clamp(20px,2.5vw,30px);font-weight:700;color:#EEF8F2;line-height:1.2;max-width:580px;margin:0 auto 1.25rem;letter-spacing:-0.5px;">The game didn't just bond us. It helped us rediscover each other.</h3>
+      <p style="font-size:15px;color:#A8C8B4;max-width:500px;margin:0 auto 2rem;line-height:1.85;">Seeing a grandparent laugh at losing a round. Watching a 6-year-old explain the rules with complete confidence. WeGo is built to create those moments — intentionally, every day.</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <button class="pill-btn" style="background:var(--sunflower);color:var(--pine);">Download for iOS</button>
+        <button class="pill-btn" style="background:var(--fern);color:#EEF8F2;">Download for Android</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="wego-download">
+    <h2>Ready to start your family adventure?</h2>
+    <p>Free to download. No subscription required to get started.</p>
+    <div class="dl-btns">
+      <button class="dl-btn">📱 Download for iOS</button>
+      <button class="dl-btn">🤖 Download for Android</button>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div style="display:flex;align-items:center;gap:8px;"><div class="nav-flowers"><div class="nf" style="background:#E8A030;"></div><div class="nf" style="background:#5A9478;"></div><div class="nf" style="background:#C06090;"></div><div class="nf" style="background:#6090C8;"></div></div><span class="footer-logo">Lumen</span></div>
+    <div class="footer-links"><a onclick="showPage('home')">Home</a><a onclick="showPage('wego')">WeGo</a><a onclick="showPage('shop')">Shop</a><a onclick="showPage('blog')">Resources</a><a onclick="showPage('about')">About</a></div>
+    <span class="footer-copy">Toronto, Canada · Est. 2025</span>
+  </footer>
+</div>
+
+<!-- ══════════ SHOP ══════════ -->
+<div class="page" id="page-shop">
+  <div class="shop-hero">
+    <p class="eyebrow" style="color:var(--sunflower);">Lumen Shop</p>
+    <h1>Products that bring families together</h1>
+    <p>Wellness essentials, family favourites, and thoughtfully sourced imports — curated for every age and every need.</p>
+  </div>
+  <div class="filter-bar">
+    <span class="filter-label">Filter</span>
+    <button class="filter-btn active" onclick="filterShop('all',this)">All</button>
+    <button class="filter-btn" onclick="filterShop('wellness',this)">Wellness</button>
+    <button class="filter-btn" onclick="filterShop('imported',this)">Imported</button>
+    <button class="filter-btn" onclick="filterShop('family',this)">Family</button>
+    <button class="filter-btn" onclick="filterShop('kids',this)">Kids</button>
+    <span class="filter-count" id="shop-count">16 products</span>
+  </div>
+  <div class="affiliate-notice"><strong>Affiliate disclosure:</strong> Lumen participates in the Amazon Associates Program. When you purchase through our links, we may earn a small commission at no extra cost to you.</div>
+  <div class="shop-grid" id="shop-grid">
+    <div class="product-card" data-cat="wellness"><div class="product-img" style="background:linear-gradient(135deg,#D4ECD8,#A8D4B0);">🍵<span class="product-badge badge-wellness">Wellness</span></div><div class="product-info"><div class="product-cat">Health & Wellness</div><div class="product-name">Omija Berry Tea</div><div class="product-desc">Five-flavour schisandra berry blend, rich in antioxidants.</div><div class="product-footer"><span class="product-price">$18</span><a href="https://www.amazon.ca/s?k=omija+tea&tag=YOUR-TAG" target="_blank" class="aff-btn">Amazon →</a></div></div></div>
+    <div class="product-card" data-cat="wellness"><div class="product-img" style="background:linear-gradient(135deg,#FAE0EC,#F4C0D8);">💊<span class="product-badge badge-wellness">Wellness</span></div><div class="product-info"><div class="product-cat">Health & Wellness</div><div class="product-name">Family Probiotic Complex</div><div class="product-desc">Multi-strain formula for adults and children over 3.</div><div class="product-footer"><span class="product-price">$34</span><a href="https://www.amazon.ca/s?k=family+probiotic&tag=YOUR-TAG" target="_blank" class="aff-btn">Amazon →</a></div></div></div>
+    <div class="product-card" data-cat="wellness"><div class="product-img" style="background:linear-gradient(135deg,#FEF0D4,#FAD890);">🧘<span class="product-badge badge-wellness">Wellness</span></div><div class="product-info"><div class="product-cat">Health & Wellness</div><div class="product-name">Mindfulness Journal Set</div><div class="product-desc">Family gratitude journals — adult and kids versions.</div><div class="product-footer"><span class="product-price">$26</span><a href="https://www.amazon.ca/s?k=family+mindfulness+journal&tag=YOUR-TAG" target="_blank" class="aff-btn">Amazon →</a></div></div></div>
+    <div class="product-card" data-cat="wellness"><div class="product-img" style="background:linear-gradient(135deg,#D4ECD8,#A8D4B0);">🌿<span class="product-badge badge-wellness">Wellness</span></div><div class="product-info"><div class="product-cat">Health & Wellness</div><div class="product-name">Fermented Snack Kit</div><div class="product-desc">Gut-healthy fermented snacks the whole family will love.</div><div class="product-footer"><span class="product-price">$28</span><a href="https://www.amazon.ca/s?k=fermented+snacks+family&tag=YOUR-TAG" target="_blank" class="aff-btn">Amazon →</a></div></div></div>
+    <div class="product-card" data-cat="imported"><div class="product-img" style="background:linear-gradient(135deg,#F0E8F8,#DCC8F0);">🧴<span class="product-badge badge-imported">Imported</span></div><div class="product-info"><div class="product-cat">Curated Imports</div><div class="product-name">Family Skincare Set</div><div class="product-desc">Gentle skincare formulated for all ages.</div><div class="product-footer"><span class="product-price">$42</span><a href="https://www.amazon.ca/s?k=family+skincare+set&tag=YOUR-TAG" target="_blank" class="aff-btn">Amazon →</a></div></div></div>
+    <div class="product-card" data-cat="imported"><div class="product-img" style="background:linear-gradient(135deg,#D4ECD8,#A8D4B0);">🍜<span class="product-badge badge-imported">Imported</span></div><div class="product-info"><div class="product-cat">Curated Imports</div><div class="product-name">Fermented Soup Kit</div><div class="product-desc">Traditional fermented soup — deeply nutritious, easy to prepare.</div><div class="product-footer"><span class="product-price">$22</span><a href="https://www.amazon.ca/s?k=fermented+soup+kit&tag=YOUR-TAG" target="_blank" class="aff-btn">Amazon →</a></div></div></div>
+    <div class="product-card" data-cat="imported"><div class="product-img" style="background:linear-gradient(135deg,#FAE0EC,#F4C0D8);">🎋<span class="product-badge badge-imported">Imported</span></div><div class="product-info"><div class="product-cat">Curated Imports</div><div class="product-name">Paper Craft Kit</div><div class="product-desc">Traditional paper art for families — creative and cross-generational.</div><div class="product-footer"><span class="product-price">$30</span><a href="https://www.amazon.ca/s?k=paper+craft+family+kit&tag=YOUR-TAG" target="_blank" class="aff-btn">Amazon →</a></div></div></div>
+    <div class="product-card" data-cat="imported"><div class="product-img" style="background:linear-gradient(135deg,#FEF0D4,#FAD890);">🍯<span class="product-badge badge-imported">Imported</span></div><div class="product-info"><div class="product-cat">Curated Imports</div><div class="product-name">Citrus Honey Tea</div><div class="product-desc">Vitamin C-rich honey tea concentrate — loved by every age.</div><div class="product-footer"><span class="product-price">$16</span><a href="https://www.amazon.ca/s?k=citrus+honey+tea&tag=YOUR-TAG" target="_blank" class="aff-btn">Amazon →</a></div></div></div>
+    <div class="product-card" data-cat="family"><div class="product-img" style="background:linear-gradient(135deg,#D4E8F4,#A8CCE8);">🎲<span class="product-badge badge-family">Family</span></div><div class="product-info"><div class="product-cat">Family</div><div class="product-name">Family Board Game Bundle</div><div class="product-desc">Cooperative games for mixed-age families — everyone plays, everyone wins.</div><div class="product-footer"><span class="product-price">$48</span><a href="https://www.amazon.ca/s?k=family+cooperative+board+game&tag=YOUR-TAG" target="_blank" class="aff-btn">Amazon →</a></div></div></div>
+    <div class="product-card" data-cat="family"><div class="product-img" style="background:linear-gradient(135deg,#D4ECD8,#A8D4B0);">📸<span class="product-badge badge-family">Family</span></div><div class="product-info"><div class="product-cat">Family</div><div class="product-name">Memory Photo Album</div><div class="product-desc">Large-format scrapbook with generational storytelling prompts.</div><div class="product-footer"><span class="product-price">$36</span><a href="https://www.amazon.ca/s?k=family+memory+scrapbook&tag=YOUR-TAG" target="_blank" class="aff-btn">Amazon →</a></div></div></div>
+    <div class="product-card" data-cat="family"><div class="product-img" style="background:linear-gradient(135deg,#FAE0EC,#F4C0D8);">🍳<span class="product-badge badge-family">Family</span></div><div class="product-info"><div class="product-cat">Family</div><div class="product-name">Family Cooking Kit</div><div class="product-desc">Recipe cards, aprons and tools sized for kids and adults alike.</div><div class="product-footer"><span class="product-price">$52</span><a href="https://www.amazon.ca/s?k=family+cooking+kit&tag=YOUR-TAG" target="_blank" class="aff-btn">Amazon →</a></div></div></div>
+    <div class="product-card" data-cat="family"><div class="product-img" style="background:linear-gradient(135deg,#FEF0D4,#FAD890);">🌙<span class="product-badge badge-family">Family</span></div><div class="product-info"><div class="product-cat">Family</div><div class="product-name">Bedtime Story Cards</div><div class="product-desc">200 story-starter cards for imaginative bedtime storytelling.</div><div class="product-footer"><span class="product-price">$24</span><a href="https://www.amazon.ca/s?k=bedtime+story+cards&tag=YOUR-TAG" target="_blank" class="aff-btn">Amazon →</a></div></div></div>
+    <div class="product-card" data-cat="kids"><div class="product-img" style="background:linear-gradient(135deg,#FEF0D4,#FAD890);">🧩<span class="product-badge badge-kids">Kids</span></div><div class="product-info"><div class="product-cat">Kids</div><div class="product-name">STEM Building Blocks</div><div class="product-desc">300-piece magnetic STEM kit for ages 4–12.</div><div class="product-footer"><span class="product-price">$44</span><a href="https://www.amazon.ca/s?k=magnetic+stem+blocks&tag=YOUR-TAG" target="_blank" class="aff-btn">Amazon →</a></div></div></div>
+    <div class="product-card" data-cat="kids"><div class="product-img" style="background:linear-gradient(135deg,#D4E8F4,#A8CCE8);">📚<span class="product-badge badge-kids">Kids</span></div><div class="product-info"><div class="product-cat">Kids</div><div class="product-name">Bilingual Storybook Set</div><div class="product-desc">Illustrated storybooks in two languages — supporting heritage and discovery.</div><div class="product-footer"><span class="product-price">$28</span><a href="https://www.amazon.ca/s?k=bilingual+children+books&tag=YOUR-TAG" target="_blank" class="aff-btn">Amazon →</a></div></div></div>
+    <div class="product-card" data-cat="kids"><div class="product-img" style="background:linear-gradient(135deg,#D4ECD8,#A8D4B0);">🎨<span class="product-badge badge-kids">Kids</span></div><div class="product-info"><div class="product-cat">Kids</div><div class="product-name">Art & Creativity Kit</div><div class="product-desc">Watercolours, sketchbooks, and project cards for ages 5–14.</div><div class="product-footer"><span class="product-price">$38</span><a href="https://www.amazon.ca/s?k=kids+art+creativity+kit&tag=YOUR-TAG" target="_blank" class="aff-btn">Amazon →</a></div></div></div>
+    <div class="product-card" data-cat="kids"><div class="product-img" style="background:linear-gradient(135deg,#FAE0EC,#F4C0D8);">🎵<span class="product-badge badge-kids">Kids</span></div><div class="product-info"><div class="product-cat">Kids</div><div class="product-name">Kids Instrument Set</div><div class="product-desc">Mini xylophone, tambourine and rhythm sticks for toddlers.</div><div class="product-footer"><span class="product-price">$32</span><a href="https://www.amazon.ca/s?k=kids+instrument+starter&tag=YOUR-TAG" target="_blank" class="aff-btn">Amazon →</a></div></div></div>
+  </div>
+  <footer class="site-footer">
+    <div style="display:flex;align-items:center;gap:8px;"><div class="nav-flowers"><div class="nf" style="background:#E8A030;"></div><div class="nf" style="background:#5A9478;"></div><div class="nf" style="background:#C06090;"></div><div class="nf" style="background:#6090C8;"></div></div><span class="footer-logo">Lumen</span></div>
+    <div class="footer-links"><a onclick="showPage('home')">Home</a><a onclick="showPage('wego')">WeGo</a><a onclick="showPage('shop')">Shop</a><a onclick="showPage('blog')">Resources</a><a onclick="showPage('about')">About</a></div>
+    <span class="footer-copy">As an Amazon Associate, Lumen earns from qualifying purchases.</span>
+  </footer>
+</div>
+
+<!-- ══════════ BLOG ══════════ -->
+<div class="page" id="page-blog">
+  <div class="blog-hero">
+    <p class="eyebrow" style="color:var(--sunflower);">Family Resources</p>
+    <h1>Ideas, guides & inspiration for thriving families</h1>
+    <p>Practical wisdom across all six wellness pillars — updated weekly for parents, grandparents, and the families they lead.</p>
+  </div>
+  <div class="blog-filter">
+    <span class="filter-label">Filter</span>
+    <button class="filter-btn active" onclick="filterBlog('all',this)">All</button>
+    <button class="filter-btn" onclick="filterBlog('physical',this)">Physical</button>
+    <button class="filter-btn" onclick="filterBlog('emotional',this)">Emotional</button>
+    <button class="filter-btn" onclick="filterBlog('intellectual',this)">Intellectual</button>
+    <button class="filter-btn" onclick="filterBlog('values',this)">Values</button>
+    <button class="filter-btn" onclick="filterBlog('social',this)">Social</button>
+  </div>
+  <div class="blog-grid" id="blog-grid">
+    <div class="blog-card" data-cat="physical"><div class="blog-img" style="background:linear-gradient(135deg,#D4ECD8,#A8D4B0);">🏃</div><div class="blog-content"><div class="blog-meta"><span class="blog-tag" style="background:#D4ECD8;color:#0A2A14;">Physical</span><span class="blog-date">May 2025</span></div><h3>10 movement habits that work for every age</h3><p>Routines that grandparents and toddlers can do side by side.</p><span class="read-more">Read more →</span></div></div>
+    <div class="blog-card" data-cat="emotional"><div class="blog-img" style="background:linear-gradient(135deg,#FAE0EC,#F4C0D8);">💛</div><div class="blog-content"><div class="blog-meta"><span class="blog-tag" style="background:#FAE0EC;color:#3A0A20;">Emotional</span><span class="blog-date">May 2025</span></div><h3>The family dinner ritual that changed everything</h3><p>One simple practice that builds deeper bonds across three generations.</p><span class="read-more">Read more →</span></div></div>
+    <div class="blog-card" data-cat="intellectual"><div class="blog-img" style="background:linear-gradient(135deg,#FEF0D4,#FAD890);">💡</div><div class="blog-content"><div class="blog-meta"><span class="blog-tag" style="background:#FEF0D4;color:#3A2000;">Intellectual</span><span class="blog-date">April 2025</span></div><h3>Raising curious kids in a distracted world</h3><p>Practical habits for keeping children genuinely interested in learning.</p><span class="read-more">Read more →</span></div></div>
+    <div class="blog-card" data-cat="values"><div class="blog-img" style="background:linear-gradient(135deg,#D4E8F4,#A8CCE8);">🧭</div><div class="blog-content"><div class="blog-meta"><span class="blog-tag" style="background:#D4E8F4;color:#0A1A40;">Values</span><span class="blog-date">April 2025</span></div><h3>Writing your family philosophy: a practical guide</h3><p>How to define what your family stands for — and live by it daily.</p><span class="read-more">Read more →</span></div></div>
+    <div class="blog-card" data-cat="social"><div class="blog-img" style="background:linear-gradient(135deg,#D4ECD8,#A8D4B0);">🤝</div><div class="blog-content"><div class="blog-meta"><span class="blog-tag" style="background:#D4ECD8;color:#0A2A14;">Social</span><span class="blog-date">March 2025</span></div><h3>How knowing your neighbours shapes your children</h3><p>The quiet but profound effect of community belonging on family wellbeing.</p><span class="read-more">Read more →</span></div></div>
+    <div class="blog-card" data-cat="physical"><div class="blog-img" style="background:linear-gradient(135deg,#FEF0D4,#FAD890);">🥗</div><div class="blog-content"><div class="blog-meta"><span class="blog-tag" style="background:#FEF0D4;color:#3A2000;">Physical</span><span class="blog-date">March 2025</span></div><h3>Eating well as a family: what actually works</h3><p>Practical nutrition for families with different ages, tastes, and health needs.</p><span class="read-more">Read more →</span></div></div>
+    <div class="blog-card" data-cat="emotional"><div class="blog-img" style="background:linear-gradient(135deg,#FAE0EC,#F4C0D8);">🌙</div><div class="blog-content"><div class="blog-meta"><span class="blog-tag" style="background:#FAE0EC;color:#3A0A20;">Emotional</span><span class="blog-date">February 2025</span></div><h3>The 5-minute bedtime check-in that transforms family connection</h3><p>A simple nightly ritual for checking in emotionally — even with teenagers.</p><span class="read-more">Read more →</span></div></div>
+    <div class="blog-card" data-cat="values"><div class="blog-img" style="background:linear-gradient(135deg,#D4E8F4,#A8CCE8);">🌍</div><div class="blog-content"><div class="blog-meta"><span class="blog-tag" style="background:#D4E8F4;color:#0A1A40;">Values</span><span class="blog-date">January 2025</span></div><h3>Raising children who belong everywhere</h3><p>On identity, roots, and how to give children the gift of genuine belonging.</p><span class="read-more">Read more →</span></div></div>
+    <div class="blog-card" data-cat="social"><div class="blog-img" style="background:linear-gradient(135deg,#D4ECD8,#A8D4B0);">🏘️</div><div class="blog-content"><div class="blog-meta"><span class="blog-tag" style="background:#D4ECD8;color:#0A2A14;">Social</span><span class="blog-date">January 2025</span></div><h3>Honouring the community you've joined</h3><p>On belonging, reciprocity, and building real relationships with the people around you.</p><span class="read-more">Read more →</span></div></div>
+  </div>
+  <div class="newsletter">
+    <div style="display:flex;gap:8px;justify-content:center;margin-bottom:1.5rem;">
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--sunflower);"></div>
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--foxglove);"></div>
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--bluebell);"></div>
+    </div>
+    <h2>Get weekly family wellness ideas</h2>
+    <p>New articles, activities and resources every week — straight to your inbox.</p>
+    <div class="newsletter-form"><input type="email" placeholder="your@email.com"><button>Subscribe</button></div>
+  </div>
+  <footer class="site-footer">
+    <div style="display:flex;align-items:center;gap:8px;"><div class="nav-flowers"><div class="nf" style="background:#E8A030;"></div><div class="nf" style="background:#5A9478;"></div><div class="nf" style="background:#C06090;"></div><div class="nf" style="background:#6090C8;"></div></div><span class="footer-logo">Lumen</span></div>
+    <div class="footer-links"><a onclick="showPage('home')">Home</a><a onclick="showPage('wego')">WeGo</a><a onclick="showPage('shop')">Shop</a><a onclick="showPage('blog')">Resources</a><a onclick="showPage('about')">About</a></div>
+    <span class="footer-copy">Toronto, Canada · Est. 2025</span>
+  </footer>
+</div>
+
+<!-- ══════════ ABOUT ══════════ -->
+<div class="page" id="page-about">
+  <div style="background:linear-gradient(135deg,#1A3828 0%,#2E6048 60%,#1A3828 100%);padding:7vw 4vw 6vw;text-align:center;">
+    <div style="display:flex;gap:8px;justify-content:center;margin-bottom:1.5rem;">
+      <div style="width:10px;height:10px;border-radius:50%;background:var(--sunflower);"></div>
+      <div style="width:10px;height:10px;border-radius:50%;background:var(--foxglove);"></div>
+      <div style="width:10px;height:10px;border-radius:50%;background:var(--bluebell);"></div>
+    </div>
+    <p class="eyebrow" style="color:var(--sunflower);">Our story</p>
+    <h1 style="font-size:clamp(34px,5vw,62px);font-weight:700;line-height:1.05;letter-spacing:-2px;color:#EEF8F2;max-width:700px;margin:0 auto 1.5rem;">A healthy family is the foundation of everything. We build tools to help you build it.</h1>
+    <p style="font-size:16px;color:#A8C8B4;line-height:1.85;max-width:540px;margin:0 auto 1.25rem;">Lumen was born from a simple belief — that whole-family health, across every dimension and every generation, is worth taking seriously. Not as a luxury. As a foundation.</p>
+    <p style="font-size:15px;color:#74BF8A;line-height:1.85;max-width:540px;margin:0 auto;">We are parents and grandparents who asked what truly matters for children growing up in a complex world. The answer shaped everything we build.</p>
+  </div>
+
+  <!-- flower strip -->
+  <div class="flower-strip">
+    <div class="fs" style="background:#1A3828;"></div><div class="fs" style="background:#2E6048;"></div><div class="fs" style="background:#5A9478;"></div><div class="fs" style="background:#E8A030;"></div><div class="fs" style="background:#C06090;"></div><div class="fs" style="background:#6090C8;"></div><div class="fs" style="background:#C06090;"></div><div class="fs" style="background:#E8A030;"></div><div class="fs" style="background:#5A9478;"></div><div class="fs" style="background:#2E6048;"></div><div class="fs" style="background:#1A3828;"></div>
+  </div>
+
+  <div style="background:var(--stone);padding:5vw 4vw;display:grid;grid-template-columns:1fr 1fr;gap:5vw;align-items:center;">
+    <div>
+      <p class="eyebrow">Where Lumen began</p>
+      <h2 style="font-size:clamp(24px,3vw,38px);font-weight:700;letter-spacing:-0.5px;color:var(--pine);margin-bottom:1.25rem;line-height:1.2;">Not a business plan. A parenting realisation we couldn't ignore.</h2>
+      <p style="font-size:15px;color:#3A5A40;line-height:1.9;margin-bottom:1.1rem;">We are a family who has lived across cultures and countries. At some point we looked at our children — who held passports from three different nations — and felt the full weight of that reality.</p>
+      <p style="font-size:15px;color:#3A5A40;line-height:1.9;margin-bottom:1.1rem;">Not anxiety. Clarity. Because the question it forced us to ask turned out to have a beautiful answer.</p>
+      <p style="font-size:17px;font-weight:600;color:var(--cedar);line-height:1.6;font-family:Georgia,serif;font-style:italic;">"What will be the one constant — the foundation — that holds these children wherever they go?"</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="value-card" style="background:linear-gradient(135deg,#D4ECD8,#A8D4B0);color:#0A2A14;">
+        <div class="value-icon">🌍</div>
+        <h3 style="color:#0A2A14;">Three nationalities. One family.</h3>
+        <p>Three countries shaped who we are. Rather than a complication, we came to see this as the greatest education we could give our children.</p>
+      </div>
+      <div class="value-card" style="background:linear-gradient(135deg,#FEF0D4,#FAD890);color:#3A2000;">
+        <div class="value-icon">🧭</div>
+        <h3 style="color:#3A2000;">The compass they carry</h3>
+        <p>What stays constant across every border? Strong family. Grounded values. The knowledge of who you are and who you belong to.</p>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:var(--pine);padding:5vw 4vw;">
+    <p class="eyebrow" style="color:var(--sunflower);">Who Lumen is built for</p>
+    <h2 style="font-size:clamp(24px,3vw,38px);font-weight:700;color:#EEF8F2;line-height:1.2;margin-bottom:1.25rem;letter-spacing:-0.5px;max-width:580px;">Parents and grandparents are the leaders of their families. Lumen is built for them.</h2>
+    <p style="font-size:15px;color:#90B8A0;line-height:1.85;max-width:540px;margin-bottom:2.5rem;">Not managers. Leaders — people who hold the vision, carry the values, and make the quiet decisions that shape who everyone else becomes.</p>
+    <div class="three-col">
+      <div class="dark-card"><div style="font-size:26px;margin-bottom:0.75rem;">👨‍👩‍👧‍👦</div><h3>Parents</h3><p>The daily architects. Setting routines, modelling values, holding the emotional centre across everything life brings.</p></div>
+      <div class="dark-card"><div style="font-size:26px;margin-bottom:0.75rem;">👴👵</div><h3>Grandparents</h3><p>The long view. Carrying memory, wisdom, and the perspective that no curriculum can replicate.</p></div>
+      <div class="dark-card"><div style="font-size:26px;margin-bottom:0.75rem;">🌱</div><h3>Every generation</h3><p>From a 3-year-old to a grandparent — each holds something the others need. Wellness means keeping that thread unbroken.</p></div>
+    </div>
+  </div>
+
+  <div style="background:var(--stone);padding:5vw 4vw;">
+    <p class="eyebrow">What grounds us</p>
+    <h2 style="font-size:clamp(22px,2.5vw,34px);font-weight:700;letter-spacing:-0.5px;color:var(--pine);margin-bottom:0.5rem;">Values that travel — and hold.</h2>
+    <p style="font-size:14px;color:#5A7060;margin-bottom:2rem;max-width:520px;line-height:1.7;">Not written for a website. Lived across cultures, generations, and many thousands of ordinary days.</p>
+    <div class="three-col">
+      <div class="value-card" style="background:linear-gradient(135deg,#D4ECD8,#A8D4B0);color:#0A2A14;"><div class="value-icon">우리</div><h3 style="color:#0A2A14;">We, not I</h3><p>Wellness is not a personal achievement. It is a shared one. A family that thrives chooses — every day — to tend to each other.</p></div>
+      <div class="value-card" style="background:linear-gradient(135deg,#FEF0D4,#FAD890);color:#3A2000;"><div class="value-icon">🌳</div><h3 style="color:#3A2000;">Roots give you reach</h3><p>Children who know who they are — what their family stands for — are more open to the world, not less.</p></div>
+      <div class="value-card" style="background:linear-gradient(135deg,#D4E8F4,#A8CCE8);color:#0A1A40;"><div class="value-icon">🏘️</div><h3 style="color:#0A1A40;">Belong where you live</h3><p>Honouring the community you've joined, learning from those who came before — these are family values too.</p></div>
+      <div class="value-card" style="background:linear-gradient(135deg,#FAE0EC,#F4C0D8);color:#3A0A20;"><div class="value-icon">🕯️</div><h3 style="color:#3A0A20;">Intention over perfection</h3><p>We are not a perfect family. We are an intentional one. Lumen is built for real families — not curated ones.</p></div>
+      <div class="value-card" style="background:linear-gradient(135deg,#D4ECD8,#A8D4B0);color:#0A2A14;"><div class="value-icon">🩺</div><h3 style="color:#0A2A14;">Health in every dimension</h3><p>Physical, emotional, nutritional, medical — a family's health is complex and personal. We take all of it seriously.</p></div>
+      <div class="value-card" style="background:linear-gradient(135deg,#FEF0D4,#FAD890);color:#3A2000;"><div class="value-icon">✨</div><h3 style="color:#3A2000;">Small moments matter most</h3><p>The dinner conversation. The walk together. The question that surprises you. These are the lumens. They add up to everything.</p></div>
+    </div>
+  </div>
+
+  <div style="background:linear-gradient(135deg,#2E6048,#1A3828);padding:5vw 4vw;display:grid;grid-template-columns:1fr 1fr;gap:5vw;align-items:center;">
+    <div>
+      <p class="eyebrow" style="color:var(--sunflower);">Whole-family health</p>
+      <h2 style="font-size:clamp(22px,2.5vw,34px);font-weight:700;color:#EEF8F2;letter-spacing:-0.5px;margin-bottom:1.25rem;line-height:1.2;">We take health seriously. All of it.</h2>
+      <p style="font-size:15px;color:#90B8A0;line-height:1.85;margin-bottom:1rem;">From the food families eat to the conditions they manage — Lumen is built for the full complexity of real family health across every age and generation.</p>
+    </div>
+    <div class="three-col" style="grid-template-columns:repeat(2,1fr);">
+      <div class="dark-card"><div style="font-size:22px;margin-bottom:0.5rem;">🥗</div><h3>Nourishment</h3><p>Food as medicine, culture, and love — for every age and condition.</p></div>
+      <div class="dark-card"><div style="font-size:22px;margin-bottom:0.5rem;">🩺</div><h3>Medical care</h3><p>Real families manage real conditions. We honour the full picture.</p></div>
+      <div class="dark-card"><div style="font-size:22px;margin-bottom:0.5rem;">🏃</div><h3>Movement</h3><p>From toddlers to grandparents — movement is medicine at every age.</p></div>
+      <div class="dark-card"><div style="font-size:22px;margin-bottom:0.5rem;">🧠</div><h3>Mental health</h3><p>We provide language and resources for the whole family's inner life.</p></div>
+    </div>
+  </div>
+
+  <div style="background:linear-gradient(135deg,#1A3828,#2E6048);padding:6vw 4vw;text-align:center;">
+    <div style="display:flex;gap:8px;justify-content:center;margin-bottom:1.5rem;">
+      <div style="width:10px;height:10px;border-radius:50%;background:var(--sunflower);"></div>
+      <div style="width:10px;height:10px;border-radius:50%;background:var(--foxglove);"></div>
+      <div style="width:10px;height:10px;border-radius:50%;background:var(--bluebell);"></div>
+    </div>
+    <p style="font-size:clamp(22px,3vw,38px);font-weight:400;color:#EEF8F2;line-height:1.5;max-width:620px;margin:0 auto 1rem;font-family:Georgia,serif;font-style:italic;">"A thriving family isn't built in a single moment. It's built in the thousand small, intentional moments that nobody else sees."</p>
+    <p style="font-size:11px;color:var(--fern);letter-spacing:2px;text-transform:uppercase;margin-bottom:2.5rem;">— The Lumen family · Toronto, Canada</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <button class="pill-btn" style="background:var(--sunflower);color:var(--pine);" onclick="showPage('home')">Explore Lumen</button>
+      <button class="pill-btn" style="background:var(--fern);color:#EEF8F2;" onclick="showPage('wego')">Meet WeGo</button>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div style="display:flex;align-items:center;gap:8px;"><div class="nav-flowers"><div class="nf" style="background:#E8A030;"></div><div class="nf" style="background:#5A9478;"></div><div class="nf" style="background:#C06090;"></div><div class="nf" style="background:#6090C8;"></div></div><span class="footer-logo">Lumen</span></div>
+    <div class="footer-links"><a onclick="showPage('home')">Home</a><a onclick="showPage('wego')">WeGo</a><a onclick="showPage('shop')">Shop</a><a onclick="showPage('blog')">Resources</a><a onclick="showPage('about')">About</a></div>
+    <span class="footer-copy">Toronto, Canada · Est. 2025</span>
+  </footer>
+</div>
+
+<script>
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.getElementById('nav-' + id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function filterShop(cat, btn) {
+  document.querySelectorAll('#page-shop .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  let n = 0;
+  document.querySelectorAll('#shop-grid .product-card').forEach(c => {
+    const show = cat === 'all' || c.dataset.cat === cat;
+    c.style.display = show ? 'flex' : 'none';
+    if (show) n++;
+  });
+  document.getElementById('shop-count').textContent = n + ' product' + (n !== 1 ? 's' : '');
+}
+function filterBlog(cat, btn) {
+  document.querySelectorAll('#page-blog .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('#blog-grid .blog-card').forEach(c => {
+    c.style.display = (cat === 'all' || c.dataset.cat === cat) ? 'block' : 'none';
+  });
+}
+</script>
+</body>
+</html>
